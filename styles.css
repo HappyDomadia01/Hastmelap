@@ -33,6 +33,89 @@ body {
     radial-gradient(circle at top right, rgba(166, 61, 64, 0.12), transparent 24%),
     linear-gradient(180deg, #fff9f2 0%, #fffdf8 44%, #f8f2ea 100%);
   line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.site-header,
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.heart-rain,
+.heart-click-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.heart-icon {
+  position: absolute;
+  display: block;
+  will-change: transform, opacity;
+}
+
+.heart-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rain-heart {
+  color: rgba(166, 61, 64, 0.65);
+  filter: drop-shadow(0 8px 12px rgba(166, 61, 64, 0.12));
+  animation: heartFall var(--fall-duration, 9s) linear var(--fall-delay, 0s) forwards;
+}
+
+.rain-heart svg {
+  fill: currentColor;
+}
+
+.click-heart {
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+  margin-top: -12px;
+  color: #ef7fa8;
+  filter: drop-shadow(0 8px 16px rgba(239, 127, 168, 0.25));
+  animation: clickHeartFloat 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.click-heart svg {
+  fill: currentColor;
+}
+
+@keyframes heartFall {
+  0% {
+    transform: translate3d(0, -10vh, 0) scale(0.9);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--fall-drift, 0px), 110vh, 0) scale(1.12);
+    opacity: 0;
+  }
+}
+
+@keyframes clickHeartFloat {
+  0% {
+    transform: translate3d(0, 8px, 0) scale(0.45);
+    opacity: 0;
+  }
+  22% {
+    transform: translate3d(0, -6px, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, -44px, 0) scale(1.5);
+    opacity: 0;
+  }
 }
 
 a {
@@ -406,5 +489,24 @@ img {
 
   .section {
     padding: 4.2rem 0;
+  }
+
+  .click-heart {
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .rain-heart,
+  .click-heart {
+    animation: none;
+    opacity: 0;
   }
 }

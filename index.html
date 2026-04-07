@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="heart-rain" aria-hidden="true"></div>
+  <div class="heart-click-layer" aria-hidden="true"></div>
   <header class="site-header">
     <div class="container">
       <nav class="navbar">
@@ -239,5 +241,88 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    (() => {
+      const rainLayer = document.querySelector(".heart-rain");
+      const clickLayer = document.querySelector(".heart-click-layer");
+
+      if (!rainLayer || !clickLayer) {
+        return;
+      }
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const isTouchDevice = window.matchMedia("(max-width: 760px)").matches;
+      const maxRainHearts = isTouchDevice ? 12 : 20;
+      const spawnInterval = isTouchDevice ? 900 : 650;
+
+      const createHeartSVG = (className = "") => {
+        const heart = document.createElement("span");
+        heart.className = className ? `heart-icon ${className}` : "heart-icon";
+        heart.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35 10.55 20C5.4 15.24 2 12.09 2 8.25 2 5.1 4.42 2.75 7.45 2.75c1.72 0 3.37.8 4.55 2.08a6.12 6.12 0 0 1 4.55-2.08C19.58 2.75 22 5.1 22 8.25c0 3.84-3.4 6.99-8.55 11.78L12 21.35Z"></path></svg>';
+        return heart;
+      };
+
+      const spawnRainHeart = () => {
+        if (prefersReducedMotion.matches || rainLayer.childElementCount >= maxRainHearts) {
+          return;
+        }
+
+        const heart = createHeartSVG("rain-heart");
+        const size = 10 + Math.random() * 12;
+        const left = Math.random() * 100;
+        const drift = -18 + Math.random() * 36;
+        const duration = 7 + Math.random() * 5;
+        const delay = Math.random() * 0.8;
+        const opacity = 0.28 + Math.random() * 0.42;
+
+        heart.style.left = `${left}%`;
+        heart.style.top = "-32px";
+        heart.style.width = `${size}px`;
+        heart.style.height = `${size}px`;
+        heart.style.opacity = opacity.toFixed(2);
+        heart.style.setProperty("--fall-duration", `${duration.toFixed(2)}s`);
+        heart.style.setProperty("--fall-delay", `${delay.toFixed(2)}s`);
+        heart.style.setProperty("--fall-drift", `${drift.toFixed(2)}px`);
+
+        heart.addEventListener("animationend", () => heart.remove(), { once: true });
+        rainLayer.appendChild(heart);
+      };
+
+      const spawnClickHeart = (x, y) => {
+        if (prefersReducedMotion.matches) {
+          return;
+        }
+
+        if (clickLayer.childElementCount > 24) {
+          clickLayer.firstElementChild?.remove();
+        }
+
+        const heart = createHeartSVG("click-heart");
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        heart.addEventListener("animationend", () => heart.remove(), { once: true });
+        clickLayer.appendChild(heart);
+      };
+
+      for (let i = 0; i < Math.ceil(maxRainHearts / 2); i += 1) {
+        window.setTimeout(spawnRainHeart, i * 180);
+      }
+
+      window.setInterval(spawnRainHeart, spawnInterval);
+
+      document.addEventListener(
+        "pointerdown",
+        (event) => {
+          if (event.pointerType === "mouse" && event.button !== 0) {
+            return;
+          }
+
+          spawnClickHeart(event.clientX, event.clientY);
+        },
+        { passive: true }
+      );
+    })();
+  </script>
 </body>
 </html>
