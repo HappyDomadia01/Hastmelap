@@ -17,7 +17,18 @@
     <div class="container">
       <nav class="navbar">
         <a href="#home" class="brand">HastMelap</a>
-        <div class="nav-links">
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          aria-label="Toggle navigation"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-links" id="primary-navigation">
           <a href="#about">About</a>
           <a href="#features">Features</a>
           <a href="#support">Support</a>
@@ -309,6 +320,35 @@
       const sticky = gallery?.querySelector(".screenshots-sticky");
       const viewport = gallery?.querySelector(".screenshots-viewport");
       const track = gallery?.querySelector(".screenshots-track");
+      const navToggle = document.querySelector(".nav-toggle");
+      const navLinks = document.querySelector(".nav-links");
+
+      if (navToggle && navLinks) {
+        const closeNav = () => {
+          navToggle.setAttribute("aria-expanded", "false");
+          navLinks.classList.remove("is-open");
+        };
+
+        navToggle.addEventListener("click", () => {
+          const isOpen = navToggle.getAttribute("aria-expanded") === "true";
+          navToggle.setAttribute("aria-expanded", String(!isOpen));
+          navLinks.classList.toggle("is-open", !isOpen);
+        });
+
+        navLinks.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth <= 760) {
+              closeNav();
+            }
+          });
+        });
+
+        window.addEventListener("resize", () => {
+          if (window.innerWidth > 760) {
+            closeNav();
+          }
+        });
+      }
 
       if (gallery && sticky && viewport && track) {
         let ticking = false;
